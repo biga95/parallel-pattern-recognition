@@ -1,0 +1,5 @@
+pattern_sad 39.6983
+N 2000000
+M 2000
+bestIdx 786850
+bestSAD 6088
