@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-
+// SAD in una posizione start: confronto Q con la finestra di S
 long long sad_at(const std::vector<int>& S, const std::vector<int>& Q, int start) {
     long long sum = 0;
     int M = (int)Q.size();
@@ -26,6 +26,7 @@ int main() {
     int N = 2'000'000;
     int M = 2'000;
 
+    // genero dati ripetibili
     std::mt19937 rng(12345);
     std::uniform_int_distribution<int> dist(0, 9);
 
@@ -43,6 +44,7 @@ int main() {
     long long bestVal = std::numeric_limits<long long>::max();
     int bestIdx = 0;
 
+    // scansione sequenziale di tutte le posizioni
     for (int start = 0; start <= N - M; start++) {
         long long v = sad_at(S, Q, start);
         if (v < bestVal) {
@@ -77,4 +79,3 @@ int main() {
     std::cout << "Salvato su " << out_file << "\n";
     return 0;
 }
-
