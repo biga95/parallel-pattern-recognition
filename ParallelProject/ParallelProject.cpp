@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <random>
 #include <chrono>
 #include <fstream>
 #include <string>
@@ -51,35 +50,50 @@ std::vector<std::pair<int, double>> read_par_times(const std::string& filename) 
         if (key == "T") {
             int t;
             double time;
-            in >> t >> time;
+            int idx;
+            long long sad;
+            in >> t >> time >> idx >> sad;
             data.push_back({ t, time });
         }
         else {
-            double tmp;
-            in >> tmp;
+            std::string rest;
+            std::getline(in, rest); // salto il resto della riga (tipo N..., M..., cols...)
         }
+
     }
 
     return data;
 }
 
+std::vector<int> read_vector_from_file(const std::string& filename) {
+    std::ifstream in(filename);
+    std::vector<int> v;
+
+    if (!in) {
+        std::cout << "Errore apertura file: " << filename << "\n";
+        return v;
+    }
+
+    int x;
+    while (in >> x) {
+        v.push_back(x);
+    }
+    return v;
+}
+
 int main() {
 
-    int N = 2'000'000;
-    int M = 2'000;
+    std::vector<int> S = read_vector_from_file("../dataset/S.txt");
+    std::vector<int> Q = read_vector_from_file("../dataset/Q.txt");
+    int N = (int)S.size();
+    int M = (int)Q.size();
+    std::cout << "Letti N=" << N << " valori per S, M=" << M << " valori per Q\n";
 
-    // genero dati ripetibili (stesso seed)
-    std::mt19937 rng(12345);
-    std::uniform_int_distribution<int> dist(0, 9);
+    if (S.empty() || Q.empty() || N < M) {
+        std::cout << "Errore: file vuoti o dimensioni sbagliate\n";
+        return 1;
+    }
 
-    std::vector<int> S(N);
-    std::vector<int> Q(M);
-
-    for (int i = 0; i < N; i++)
-        S[i] = dist(rng);
-
-    for (int j = 0; j < M; j++)
-        Q[j] = dist(rng);
 
     // provo diversi numeri di thread e salvo i tempi
     int thread_list[] = { 1, 2, 4, 8, 16 };
@@ -96,6 +110,7 @@ int main() {
 
     out << "N " << N << "\n";
     out << "M " << M << "\n";
+    out << "cols T time bestIdx bestSAD\n";
 
     for (int ti = 0; ti < nt; ti++) {
         int T = thread_list[ti];
@@ -152,7 +167,8 @@ int main() {
             << " bestSAD=" << bestVal
             << " time=" << best_time << " s\n";
 
-        out << "T " << T << " " << best_time << "\n";
+        out << "T " << T << " " << best_time << " " << bestIdx << " " << bestVal << "\n";
+
     }
 
     std::cout << "Salvato su " << out_file << "\n";

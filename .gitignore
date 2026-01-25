@@ -6,3 +6,7 @@ Release/
 *.obj
 *.pdb
 *.user
+
+# Dataset
+dataset/
+

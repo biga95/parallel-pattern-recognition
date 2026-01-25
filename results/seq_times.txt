@@ -1,5 +1,5 @@
-pattern_sad 40.0893
-N 2000000
-M 2000
-bestIdx 786850
-bestSAD 6088
+pattern_sad 0.527905
+N 630000
+M 140
+bestIdx 1400
+bestSAD 1

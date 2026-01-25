@@ -4,6 +4,8 @@
 #include <chrono>
 #include <fstream>
 #include <string>
+#include <limits>
+
 
 // SAD in una posizione start: confronto Q con la finestra di S
 long long sad_at(const std::vector<int>& S, const std::vector<int>& Q, int start) {
@@ -21,23 +23,44 @@ std::string results_path(const std::string& filename) {
     return "../results/" + filename;
 }
 
+std::vector<int> read_vector_from_file(const std::string& filename) {
+    std::ifstream in(filename);
+    std::vector<int> v;
+
+    if (!in) {
+        std::cout << "Errore apertura file: " << filename << "\n";
+        return v;
+    }
+
+    int x;
+    while (in >> x) {
+        v.push_back(x);
+    }
+
+    return v;
+}
+
+
 int main() {
 
-    int N = 2'000'000;
-    int M = 2'000;
 
+    std::vector<int> S = read_vector_from_file("../dataset/S.txt");
+    std::vector<int> Q = read_vector_from_file("../dataset/Q.txt");
+    int N = (int)S.size();
+    int M = (int)Q.size();
+    std::cout << "Letti N=" << N << " valori per S, M=" << M << " valori per Q\n";
+
+    /*
     // genero dati ripetibili
     std::mt19937 rng(12345);
     std::uniform_int_distribution<int> dist(0, 9);
-
-    std::vector<int> S(N);
-    std::vector<int> Q(M);
 
     for (int i = 0; i < N; i++)
         S[i] = dist(rng);
 
     for (int j = 0; j < M; j++)
         Q[j] = dist(rng);
+    */
 
     auto t_start = std::chrono::high_resolution_clock::now();
 
