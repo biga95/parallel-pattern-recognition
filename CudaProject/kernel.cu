@@ -56,6 +56,41 @@ __global__ void sad_kernel_const(const int* S, long long* out, int N, int M) {
     out[start] = sum;
 }
 
+__global__ void sad_kernel_shared(const int* S, const int* Q, long long* out, int N, int M)
+{
+    extern __shared__ int sQ[];   // dimensione = M * sizeof(int)
+
+    // carico Q in shared (tutti i thread del blocco collaborano)
+    for (int j = threadIdx.x; j < M; j += blockDim.x) {
+        sQ[j] = Q[j];
+    }
+    __syncthreads();
+
+    int start = blockIdx.x * blockDim.x + threadIdx.x;
+    int maxStart = N - M;
+    if (start > maxStart) return;
+
+    long long sad = 0;
+    for (int j = 0; j < M; j++) {
+        sad += llabs((long long)S[start + j] - (long long)sQ[j]);
+    }
+
+    out[start] = sad;
+}
+
+double read_seq_time(const std::string& filename) {
+    std::ifstream in(filename);
+    if (!in) return -1.0;
+
+    std::string key;
+    double val;
+
+    while (in >> key >> val) {
+        if (key == "pattern_sad")
+            return val;   // in secondi
+    }
+    return -1.0;
+}
 
 
 int main() {
@@ -182,6 +217,101 @@ int main() {
         outFile << "cuda_const_bestIdx " << const_bestIdx << "\n";
         outFile << "cuda_const_bestSAD " << const_bestVal << "\n";
     }
+
+
+    // ---------------- CUDA SHARED ----------------
+    auto t_shared_start = std::chrono::high_resolution_clock::now();
+
+    cudaEvent_t sStart, sStop;
+    cudaEventCreate(&sStart);
+    cudaEventCreate(&sStop);
+
+    size_t shmemBytes = M * sizeof(int);
+
+    cudaEventRecord(sStart);
+    sad_kernel_shared << <blocks, threads, shmemBytes >> > (dS, dQ, dOut, N, M);
+    cudaEventRecord(sStop);
+    cudaEventSynchronize(sStop);
+
+    float shared_ms = 0.0f;
+    cudaEventElapsedTime(&shared_ms, sStart, sStop);
+
+    cudaEventDestroy(sStart);
+    cudaEventDestroy(sStop);
+
+    std::vector<long long> out_shared(maxStart + 1);
+    cudaMemcpy(out_shared.data(), dOut, (maxStart + 1) * sizeof(long long), cudaMemcpyDeviceToHost);
+
+    // cerco il minimo su CPU
+    long long shared_bestVal = out_shared[0];
+    int shared_bestIdx = 0;
+    for (int i = 1; i <= maxStart; i++) {
+        if (out_shared[i] < shared_bestVal) {
+            shared_bestVal = out_shared[i];
+            shared_bestIdx = i;
+        }
+    }
+
+    auto t_shared_end = std::chrono::high_resolution_clock::now();
+    double shared_total_ms = std::chrono::duration<double, std::milli>(t_shared_end - t_shared_start).count();
+
+    std::cout << "CUDA(shared) kernel_ms=" << shared_ms << "\n";
+    std::cout << "CUDA(shared) total_ms=" << shared_total_ms << "\n";
+    std::cout << "CUDA(shared) bestIdx=" << shared_bestIdx << " bestSAD=" << shared_bestVal << "\n";
+
+    outFile << "cuda_shared_kernel_ms " << shared_ms << "\n";
+    outFile << "cuda_shared_total_ms " << shared_total_ms << "\n";
+    outFile << "cuda_shared_bestIdx " << shared_bestIdx << "\n";
+    outFile << "cuda_shared_bestSAD " << shared_bestVal << "\n";
+
+    double t_seq = read_seq_time("../results/seq_times.txt");
+if (t_seq < 0) {
+    std::cout << "Errore lettura ../results/seq_times.txt\n";
+}
+else {
+    std::ofstream sp("../results/cuda_speedup.txt");
+    if (!sp) {
+        std::cout << "Errore apertura ../results/cuda_speedup.txt\n";
+    }
+    else {
+        sp << "version time_s speedup\n";
+
+        // GLOBAL
+        sp << "cuda_global_kernel " << (global_ms / 1000.0) << " " << (t_seq / (global_ms / 1000.0)) << "\n";
+        sp << "cuda_global_total "  << (global_total_ms / 1000.0) << " " << (t_seq / (global_total_ms / 1000.0)) << "\n";
+
+        // CONST
+        sp << "cuda_const_kernel " << (const_ms / 1000.0) << " " << (t_seq / (const_ms / 1000.0)) << "\n";
+        sp << "cuda_const_total "  << (const_total_ms / 1000.0) << " " << (t_seq / (const_total_ms / 1000.0)) << "\n";
+
+        // SHARED
+        sp << "cuda_shared_kernel " << (shared_ms / 1000.0) << " " << (t_seq / (shared_ms / 1000.0)) << "\n";
+        sp << "cuda_shared_total "  << (shared_total_ms / 1000.0) << " " << (t_seq / (shared_total_ms / 1000.0)) << "\n";
+    }
+
+    std::cout << "Speedup CUDA salvato su ../results/cuda_speedup.txt\n";
+}
+
+    std::cout << "\n=== CUDA SPEEDUP (vs CPU sequenziale) ===\n";
+
+    std::cout << "CUDA global  (kernel)  speedup = "
+    << (t_seq / (global_ms / 1000.0)) << "\n";
+
+    std::cout << "CUDA global  (total)   speedup = "
+    << (t_seq / (global_total_ms / 1000.0)) << "\n";
+
+    std::cout << "CUDA constant(kernel)  speedup = "
+    << (t_seq / (const_ms / 1000.0)) << "\n";
+
+    std::cout << "CUDA constant(total)   speedup = "
+    << (t_seq / (const_total_ms / 1000.0)) << "\n";
+
+    std::cout << "CUDA shared  (kernel)  speedup = "
+    << (t_seq / (shared_ms / 1000.0)) << "\n";
+
+    std::cout << "CUDA shared  (total)   speedup = "
+    << (t_seq / (shared_total_ms / 1000.0)) << "\n";
+
 
     return 0;
 }
