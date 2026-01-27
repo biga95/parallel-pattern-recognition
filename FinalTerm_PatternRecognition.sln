@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParallelProject", "Parallel
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DatasetTool", "DatasetTool\DatasetTool.vcxproj", "{5CB3DC45-488A-41C6-B995-3AB7E95DFC2C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaProject", "CudaProject\CudaProject.vcxproj", "{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{5CB3DC45-488A-41C6-B995-3AB7E95DFC2C}.Release|x64.Build.0 = Release|x64
 		{5CB3DC45-488A-41C6-B995-3AB7E95DFC2C}.Release|x86.ActiveCfg = Release|Win32
 		{5CB3DC45-488A-41C6-B995-3AB7E95DFC2C}.Release|x86.Build.0 = Release|Win32
+		{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}.Debug|x64.ActiveCfg = Debug|x64
+		{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}.Debug|x64.Build.0 = Debug|x64
+		{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}.Debug|x86.ActiveCfg = Debug|x64
+		{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}.Debug|x86.Build.0 = Debug|x64
+		{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}.Release|x64.ActiveCfg = Release|x64
+		{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}.Release|x64.Build.0 = Release|x64
+		{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}.Release|x86.ActiveCfg = Release|x64
+		{DDB2831A-DDFA-723C-AF41-5BECB6AE5880}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

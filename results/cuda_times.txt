@@ -1,0 +1,10 @@
+N 630000
+M 140
+cuda_global_kernel_ms 4.29568
+cuda_global_total_ms 10.999
+cuda_global_bestIdx 1400
+cuda_global_bestSAD 1
+cuda_const_kernel_ms 3.83379
+cuda_const_total_ms 10.5578
+cuda_const_bestIdx 1400
+cuda_const_bestSAD 1
