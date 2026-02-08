@@ -1,0 +1,2 @@
+python_seq_ms python_mp_ms speedup
+3323.514 1681.464 1.976560

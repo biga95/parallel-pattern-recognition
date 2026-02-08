@@ -1,0 +1,2 @@
+bestIdx 1400
+bestSAD 1.0

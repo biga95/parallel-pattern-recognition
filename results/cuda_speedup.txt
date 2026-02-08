@@ -1,7 +1,7 @@
 version time_s speedup
-cuda_global_kernel 0.00403149 130.945
-cuda_global_total 0.0075716 69.7217
-cuda_const_kernel 0.00383133 137.786
-cuda_const_total 0.0086025 61.3665
-cuda_shared_kernel 0.00444294 118.819
-cuda_shared_total 0.0073825 71.5076
+cuda_global_kernel 0.00410624 128.562
+cuda_global_total 0.0070128 75.2773
+cuda_const_kernel 0.00381405 138.411
+cuda_const_total 0.0068049 77.5772
+cuda_shared_kernel 0.00445891 118.393
+cuda_shared_total 0.0074696 70.6738

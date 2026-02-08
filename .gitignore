@@ -10,3 +10,10 @@ Release/
 # Dataset
 dataset/
 
+# Python cache
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
