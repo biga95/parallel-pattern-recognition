@@ -1,30 +1,30 @@
-# Pattern Recognition (SAD) – Programmazione Parallela
+# Parallel Computing – FinalTerm Pattern Recognition
 
-Progetto finale per il corso di Programmazione Parallela.
+Progetto per l’esame di Parallel Computing (9 CFU).
 
-L’obiettivo del progetto è cercare un pattern (una sequenza di numeri) all’interno di una serie più lunga,
-calcolando per ogni posizione la differenza totale (SAD – Sum of Absolute Differences) e individuando
-la posizione in cui il pattern combacia meglio.
+Il progetto risolve un problema di pattern matching su serie temporali usando la metrica SAD (Sum of Absolute Differences).
 
-Il progetto è diviso in due parti:
-- versione sequenziale
-- versione parallela con OpenMP
+Sono presenti due implementazioni parallele:
+- CUDA (C++) su GPU  
+- Python (multiprocessing) su CPU  
 
-Strumenti utilizzati:
-- C++
-- Visual Studio 2022
-- OpenMP
+---
+Struttura
+
+- `CudaProject/` → implementazioni CUDA  
+- `SequentialProject/`, `ParallelProject/` → versioni CPU in C++  
+- `python/` → versione Python (sequenziale e multiprocessing)  
+- `dataset/` → file di input  
+- `results/` → tempi e risultati degli esperimenti  
+
+---
+
+ Esecuzione (Python)
+
+```bash
+cd python
+python sad_seq.py
+python sad_mp.py
 
 
-
-
-Dato un segnale lungo `S` e un pattern più corto `Q`, l’algoritmo cerca la posizione in cui `Q` è più simile a `S` usando come metrica la SAD (Sum of Absolute Differences).
-
-I dati provengono dal dataset ECG5000.  
-Un tool (`DatasetTool`) viene usato per generare i file `S.txt` e `Q.txt`.
-
-Sono presenti due versioni:
-- una sequenziale
-- una parallela usando OpenMP
-
-I tempi di esecuzione e lo speedup sono salvati nella cartella `results/`.
+I risultati vengono salvati in results/.
